@@ -1,7 +1,6 @@
 import { musicConfig } from "./music-config.js";
 
 export default function musicMatcher(prompt = "", style = "default") {
-
   const text = prompt.toLowerCase();
 
   if (text.includes("solder") || text.includes("elektronik")) {
@@ -18,5 +17,9 @@ export default function musicMatcher(prompt = "", style = "default") {
 
   const list = musicConfig[style] || musicConfig.default;
 
-  return `/assets/music/${list[Math.floor(Math.random() * list.length)]}`;
+  const file = list[Math.floor(Math.random() * list.length)];
+
+  return file.startsWith("assets/")
+    ? file
+    : `/assets/music/${file}`;
 }
