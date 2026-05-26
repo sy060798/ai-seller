@@ -18,14 +18,14 @@ export default async function handler(req, res) {
         {
           role: "system",
           content:
-            "Kamu adalah AI marketing affiliate Indonesia yang membuat script TikTok viral, singkat, dan persuasif."
+            "Kamu adalah AI marketing affiliate Indonesia yang membuat script TikTok viral."
         },
         {
           role: "user",
-          content: `Buat script video affiliate:
+          content: `Buat script TikTok affiliate:
 Produk: ${prompt}
 Style: ${style}
-Buat hook kuat 3 detik pertama, singkat, viral, dan ajakan beli yang kuat.`
+Buat singkat, hook kuat 3 detik pertama, dan CTA kuat.`
         }
       ]
     });
@@ -35,7 +35,7 @@ Buat hook kuat 3 detik pertama, singkat, viral, dan ajakan beli yang kuat.`
     if (!script) {
       return res.status(500).json({
         success: false,
-        error: "No script generated"
+        error: "Script kosong dari AI"
       });
     }
 
@@ -50,7 +50,7 @@ Buat hook kuat 3 detik pertama, singkat, viral, dan ajakan beli yang kuat.`
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Generate script failed"
+      error: error.message
     });
   }
 }
