@@ -1,0 +1,8 @@
+export default async function handler(req, res) {
+
+  res.status(200).json({
+    success: true,
+    message: "Upload ready (upgrade to Cloudinary for production)"
+  });
+
+}
