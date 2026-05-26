@@ -68,6 +68,9 @@ async function generateAI() {
       image: base64Image
     };
 
+    // ======================
+    // 1. SCRIPT
+    // ======================
     const scriptRes = await fetch(`${API}/generate-script`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,6 +80,9 @@ async function generateAI() {
     const script = await scriptRes.json();
     console.log("SCRIPT AI:", script);
 
+    // ======================
+    // 2. IMAGE (FIX IMPORTANT)
+    // ======================
     const imageRes = await fetch(`${API}/generate-image`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -86,6 +92,9 @@ async function generateAI() {
     const image = await imageRes.json();
     console.log("IMAGE AI:", image);
 
+    // ======================
+    // 3. VIDEO
+    // ======================
     const videoRes = await fetch(`${API}/generate-video`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -95,10 +104,13 @@ async function generateAI() {
     const video = await videoRes.json();
     console.log("VIDEO AI:", video);
 
+    // ======================
+    // 4. RENDER
+    // ======================
     renderResult(image, video, script);
 
   } catch (err) {
-    console.error(err);
+    console.error("ERROR:", err);
     alert("Error generate AI!");
   }
 
@@ -106,19 +118,28 @@ async function generateAI() {
 }
 
 // ======================
-// 🖼️ RENDER HASIL
+// 🖼️ RENDER HASIL (FIX IMPORTANT)
 // ======================
 function renderResult(image, video, script) {
 
-  const img1 = document.querySelectorAll(".result-box img")[0];
-  if (img1 && image?.url) img1.src = image.url;
+  console.log("RAW IMAGE RESPONSE:", image);
 
+  const url = image?.url;
+
+  if (!url) {
+    console.error("IMAGE NULL / ERROR:", image);
+    return;
+  }
+
+  const img1 = document.querySelectorAll(".result-box img")[0];
   const img2 = document.querySelectorAll(".result-box img")[1];
-  if (img2 && image?.url) img2.src = image.url;
+
+  if (img1) img1.src = url;
+  if (img2) img2.src = url;
 
   const videoEl = document.querySelector("video source");
-  if (videoEl && video?.url) {
-    videoEl.src = video.url;
+  if (videoEl && video?.video) {
+    videoEl.src = video.video;
     videoEl.parentElement.load();
   }
 
