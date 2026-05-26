@@ -3,34 +3,58 @@ import musicMatcher from "./music-matcher.js";
 
 export default async function handler(req, res) {
   try {
-    const body = req.body ? JSON.parse(req.body) : {};
+    const body = req.body || {};
 
     const prompt = body.prompt || body.productText || "product video";
     const style = body.style || "cinematic";
 
+    // ======================
     // STEP 1: SCRIPT AI
+    // ======================
     const scriptAI = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "Kamu adalah AI pembuat script video marketing TikTok affiliate."
+            "Kamu adalah AI pembuat script video marketing TikTok affiliate Indonesia yang viral, singkat, dan engaging."
         },
         {
           role: "user",
-          content: `Buat script video TikTok affiliate pendek, viral, dan engaging untuk produk: ${prompt}`
+          content: `Buat script video TikTok affiliate:
+Produk: ${prompt}
+Style: ${style}
+Buat hook 3 detik pertama sangat kuat, viral, dan ajakan beli yang persuasif.`
         }
       ]
     });
 
-    const script = scriptAI.choices[0].message.content;
+    const script = scriptAI?.choices?.[0]?.message?.content;
 
+    if (!script) {
+      return res.status(500).json({
+        success: false,
+        error: "Script AI kosong"
+      });
+    }
+
+    // ======================
     // STEP 2: MUSIC MATCHER
-    const music = musicMatcher(prompt, style);
+    // ======================
+    let music = null;
 
-    // STEP 3: VIDEO PLACEHOLDER (bisa upgrade ke Runway/Pika nanti)
-    const video = "https://www.w3schools.com/html/mov_bbb.mp4";
+    try {
+      music = musicMatcher(prompt, style);
+    } catch (err) {
+      console.error("Music matcher error:", err);
+      music = "assets/music/default.mp3";
+    }
+
+    // ======================
+    // STEP 3: VIDEO OUTPUT
+    // ======================
+    const video =
+      "https://www.w3schools.com/html/mov_bbb.mp4";
 
     return res.status(200).json({
       success: true,
@@ -41,11 +65,11 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("VIDEO ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      error: "Generate video failed"
+      error: error.message || "Generate video failed"
     });
   }
 }
