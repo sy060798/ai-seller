@@ -20,7 +20,6 @@ function playMusic(style = "random") {
   audio.src = src;
 
   audio.play().catch(() => {
-    // autoplay block safe fallback
     console.log("Music blocked until user interaction");
   });
 }
@@ -32,9 +31,7 @@ function getInputData() {
   return {
     productText: document.getElementById("prompt").value,
     voice: document.getElementById("voice").value,
-    style: document.getElementById("style").value,
-    productImage: document.getElementById("produkInput").files[0],
-    modelImage: document.getElementById("modelInput").files[0]
+    style: document.getElementById("style").value
   };
 }
 
@@ -58,12 +55,13 @@ async function generateAI() {
     // ======================
     const scriptRes = await fetch(`${API}/generate-script`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(data)
     });
 
     const script = await scriptRes.json();
-
     console.log("SCRIPT AI:", script);
 
     // ======================
@@ -71,11 +69,13 @@ async function generateAI() {
     // ======================
     const imageRes = await fetch(`${API}/generate-image`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(data)
     });
 
     const image = await imageRes.json();
-
     console.log("IMAGE AI:", image);
 
     // ======================
@@ -83,15 +83,17 @@ async function generateAI() {
     // ======================
     const videoRes = await fetch(`${API}/generate-video`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(data)
     });
 
     const video = await videoRes.json();
-
     console.log("VIDEO AI:", video);
 
     // ======================
-    // 4. RENDER RESULT (OPTIONAL)
+    // 4. RENDER RESULT
     // ======================
     renderResult(image, video, script);
 
@@ -112,9 +114,9 @@ function renderResult(image, video, script) {
   const img1 = document.querySelectorAll(".result-box img")[0];
   if (img1 && image?.url) img1.src = image.url;
 
-  // poster 2 (optional fallback)
+  // poster 2 (fallback)
   const img2 = document.querySelectorAll(".result-box img")[1];
-  if (img2 && image?.url2) img2.src = image.url2;
+  if (img2 && image?.url) img2.src = image.url;
 
   // video
   const videoEl = document.querySelector("video source");
@@ -123,11 +125,12 @@ function renderResult(image, video, script) {
     videoEl.parentElement.load();
   }
 
+  // script log
   console.log("SCRIPT RESULT:", script);
 }
 
 // ======================
-// 🎛️ STYLE CHANGE MUSIC PREVIEW
+// 🎛️ STYLE MUSIC CHANGE
 // ======================
 document.getElementById("style").addEventListener("change", (e) => {
   playMusic(e.target.value);
