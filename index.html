@@ -6,45 +6,31 @@
   <title>AI Seller Generator</title>
 
   <link rel="stylesheet" href="./style.css">
-
-  <style>
-    /* === CSS KAMU TETAP 100% SAMA (dipotong biar ringkas di sini) === */
-    /* TIDAK ADA PERUBAHAN */
-  </style>
-
 </head>
 
 <body>
 
-  <!-- 🎵 MUSIC SYSTEM (NEW - HIDDEN PLAYER) -->
+  <!-- 🎵 MUSIC SYSTEM -->
   <audio id="bgMusic" loop></audio>
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-
-    <div class="logo">
-      AI SELLER
-    </div>
+    <div class="logo">AI SELLER</div>
 
     <div class="menu">
-
       <button>Dashboard</button>
       <button>Generate Poster</button>
       <button>Generate Video</button>
       <button>Affiliate Script</button>
       <button>History</button>
       <button>Setting</button>
-
     </div>
-
   </div>
 
   <!-- MAIN -->
   <div class="main">
 
-    <div class="top-title">
-      AI Affiliate Generator
-    </div>
+    <div class="top-title">AI Affiliate Generator</div>
 
     <div class="subtitle">
       Generate poster, video, subtitle, dan voice AI otomatis.
@@ -52,16 +38,20 @@
 
     <div class="grid">
 
-      <!-- LEFT (TETAP) -->
+      <!-- LEFT -->
       <div class="card">
 
         <h2>Upload Produk</h2>
 
+        <!-- ✅ FIX: ID DIGANTI BIAR MATCH SCRIPT.JS -->
         <label class="upload-box">
-          <input type="file" id="produkInput"/>
+          <input type="file" id="imageInput" accept="image/*"/>
           <h3>Upload Foto Produk</h3>
           <p>Klik untuk upload gambar produk</p>
         </label>
+
+        <!-- PREVIEW IMAGE -->
+        <img id="previewImage" style="width:100%; max-width:250px; display:none; margin-top:10px; border-radius:10px;" />
 
         <label class="upload-box">
           <input type="file" id="modelInput"/>
@@ -69,18 +59,15 @@
           <p>Boleh kosong</p>
         </label>
 
-        <textarea id="prompt"
-          placeholder="Buat video affiliate TikTok..."></textarea>
+        <textarea id="prompt" placeholder="Buat video affiliate TikTok..."></textarea>
 
-        <!-- VOICE -->
         <select id="voice">
-          <option>Cewek Affiliate</option>
-          <option>Cewek Santai</option>
-          <option>Cowok Santai</option>
-          <option>Formal Indonesia</option>
+          <option value="cewek">Cewek Affiliate</option>
+          <option value="santai">Cewek Santai</option>
+          <option value="cowok">Cowok Santai</option>
+          <option value="formal">Formal Indonesia</option>
         </select>
 
-        <!-- STYLE -->
         <select id="style">
           <option value="random">Random AI Style</option>
           <option value="tech">Tech / Elektronik</option>
@@ -89,32 +76,29 @@
           <option value="industrial">Industrial</option>
         </select>
 
-        <!-- MODE -->
         <div class="check-group">
-
           <label><input type="checkbox" checked/> Poster AI</label>
           <label><input type="checkbox" checked/> Video AI</label>
           <label><input type="checkbox" checked/> Subtitle Auto</label>
-
         </div>
 
-        <!-- BUTTON -->
         <button class="generate-btn" onclick="generateAI()">
           GENERATE AI
         </button>
 
-        <!-- LOADING -->
-        <div class="loading" id="loading">
+        <div class="loading" id="loading" style="display:none;">
           AI sedang membuat konten...
         </div>
 
       </div>
 
-      <!-- RIGHT (TETAP) -->
+      <!-- RIGHT -->
       <div class="card">
+
         <h2>Hasil AI</h2>
 
         <div class="result-grid">
+
           <div class="result-box">
             <img src="https://picsum.photos/500/400?1"/>
             <div class="result-info">
@@ -130,6 +114,7 @@
               <button class="download-btn">Download</button>
             </div>
           </div>
+
         </div>
 
         <div class="video-box">
@@ -139,9 +124,7 @@
             <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
           </video>
 
-          <button class="download-btn">
-            Download Video
-          </button>
+          <button class="download-btn">Download Video</button>
         </div>
 
       </div>
@@ -150,49 +133,32 @@
 
   </div>
 
-  <!-- 🎵 MUSIC LOGIC (NEW SCRIPT) -->
+  <!-- ========================= -->
+  <!-- 🎯 FIX UPLOAD PREVIEW JS -->
+  <!-- ========================= -->
   <script>
+    const fileInput = document.getElementById("imageInput");
 
-    const audio = document.getElementById("bgMusic");
+    fileInput?.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    const musicMap = {
-      tech: "assets/music/tech1.mp3",
-      soft: "assets/music/soft1.mp3",
-      upbeat: "assets/music/upbeat1.mp3",
-      industrial: "assets/music/industrial1.mp3",
-      random: "assets/music/default.mp3"
-    };
+      const reader = new FileReader();
 
-    function playMusic(style){
+      reader.onload = (event) => {
+        const img = document.getElementById("previewImage");
+        img.src = event.target.result;
+        img.style.display = "block";
+      };
 
-      const music = musicMap[style] || musicMap.random;
-
-      audio.src = music;
-      audio.volume = 0.4;
-
-      audio.play().catch(()=>{});
-    }
-
-    async function generateAI(){
-
-      const loading = document.getElementById("loading");
-      const style = document.getElementById("style").value;
-
-      loading.style.display = "block";
-
-      // 🎵 AUTO MUSIC START
-      playMusic(style);
-
-      setTimeout(()=>{
-
-        loading.style.display = "none";
-
-        alert("AI berhasil generate poster & video + music aktif!");
-
-      },3000);
-    }
-
+      reader.readAsDataURL(file);
+    });
   </script>
+
+  <!-- ========================= -->
+  <!-- 🚀 MAIN SCRIPT (WAJIB) -->
+  <!-- ========================= -->
+  <script src="./script.js"></script>
 
 </body>
 </html>
