@@ -31,7 +31,8 @@ function getInputData() {
   return {
     productText: document.getElementById("prompt").value,
     voice: document.getElementById("voice").value,
-    style: document.getElementById("style").value
+    style: document.getElementById("style").value,
+    imageFile: document.getElementById("imageInput")?.files?.[0] || null
   };
 }
 
@@ -45,56 +46,55 @@ async function generateAI() {
 
   const data = getInputData();
 
-  // 🎵 START MUSIC
   playMusic(data.style);
 
   try {
 
-    // ======================
-    // 1. GENERATE SCRIPT
-    // ======================
+    let base64Image = null;
+
+    if (data.imageFile) {
+      base64Image = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(data.imageFile);
+      });
+    }
+
+    const payload = {
+      productText: data.productText,
+      voice: data.voice,
+      style: data.style,
+      image: base64Image
+    };
+
     const scriptRes = await fetch(`${API}/generate-script`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
     const script = await scriptRes.json();
     console.log("SCRIPT AI:", script);
 
-    // ======================
-    // 2. GENERATE IMAGE
-    // ======================
     const imageRes = await fetch(`${API}/generate-image`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
     const image = await imageRes.json();
     console.log("IMAGE AI:", image);
 
-    // ======================
-    // 3. GENERATE VIDEO
-    // ======================
     const videoRes = await fetch(`${API}/generate-video`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
     const video = await videoRes.json();
     console.log("VIDEO AI:", video);
 
-    // ======================
-    // 4. RENDER RESULT
-    // ======================
     renderResult(image, video, script);
 
   } catch (err) {
@@ -110,22 +110,18 @@ async function generateAI() {
 // ======================
 function renderResult(image, video, script) {
 
-  // poster 1
   const img1 = document.querySelectorAll(".result-box img")[0];
   if (img1 && image?.url) img1.src = image.url;
 
-  // poster 2 (fallback)
   const img2 = document.querySelectorAll(".result-box img")[1];
   if (img2 && image?.url) img2.src = image.url;
 
-  // video
   const videoEl = document.querySelector("video source");
   if (videoEl && video?.url) {
     videoEl.src = video.url;
     videoEl.parentElement.load();
   }
 
-  // script log
   console.log("SCRIPT RESULT:", script);
 }
 
