@@ -3,7 +3,7 @@ import randomStyle from "./random-style.js";
 
 export default async function handler(req, res) {
   try {
-    const body = req.body ? JSON.parse(req.body) : {};
+    const body = req.body || {};
 
     const style =
       body.style === "random" || !body.style
@@ -25,23 +25,32 @@ export default async function handler(req, res) {
           content: `Buat script video affiliate:
 Produk: ${prompt}
 Style: ${style}
-Buat singkat, viral, hook kuat di 3 detik pertama, dan ajakan beli.`
+Buat hook kuat 3 detik pertama, singkat, viral, dan ajakan beli yang kuat.`
         }
       ]
     });
 
+    const script = ai?.choices?.[0]?.message?.content;
+
+    if (!script) {
+      return res.status(500).json({
+        success: false,
+        error: "No script generated"
+      });
+    }
+
     return res.status(200).json({
       success: true,
       style,
-      script: ai.choices[0].message.content
+      script
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("SCRIPT ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      error: "Generate script failed"
+      error: error.message || "Generate script failed"
     });
   }
 }
