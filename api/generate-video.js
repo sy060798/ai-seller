@@ -8,23 +8,21 @@ export default async function handler(req, res) {
     const prompt = body.prompt || body.productText || "product video";
     const style = body.style || "cinematic";
 
-    // ======================
-    // STEP 1: SCRIPT AI
-    // ======================
+    // SCRIPT AI
     const scriptAI = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "Kamu adalah AI pembuat script video marketing TikTok affiliate Indonesia yang viral, singkat, dan engaging."
+            "Kamu adalah AI pembuat script video TikTok affiliate."
         },
         {
           role: "user",
           content: `Buat script video TikTok affiliate:
 Produk: ${prompt}
 Style: ${style}
-Buat hook 3 detik pertama sangat kuat, viral, dan ajakan beli yang persuasif.`
+Buat viral, singkat, dan CTA kuat.`
         }
       ]
     });
@@ -34,34 +32,28 @@ Buat hook 3 detik pertama sangat kuat, viral, dan ajakan beli yang persuasif.`
     if (!script) {
       return res.status(500).json({
         success: false,
-        error: "Script AI kosong"
+        error: "Script video kosong"
       });
     }
 
-    // ======================
-    // STEP 2: MUSIC MATCHER
-    // ======================
-    let music = null;
-
+    // MUSIC SAFE
+    let music;
     try {
       music = musicMatcher(prompt, style);
     } catch (err) {
-      console.error("Music matcher error:", err);
+      console.error("music error:", err);
       music = "assets/music/default.mp3";
     }
 
-    // ======================
-    // STEP 3: VIDEO OUTPUT
-    // ======================
-    const video =
-      "https://www.w3schools.com/html/mov_bbb.mp4";
+    // VIDEO PLACEHOLDER
+    const video = "https://www.w3schools.com/html/mov_bbb.mp4";
 
     return res.status(200).json({
       success: true,
-      video,
       script,
       music,
-      style
+      style,
+      video
     });
 
   } catch (error) {
@@ -69,7 +61,7 @@ Buat hook 3 detik pertama sangat kuat, viral, dan ajakan beli yang persuasif.`
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Generate video failed"
+      error: error.message
     });
   }
 }
