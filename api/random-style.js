@@ -1,4 +1,12 @@
+// api/random-style.js
+
 export default function randomStyle() {
-  const styles = ["tech", "soft", "upbeat", "cinematic"];
+  const styles = [
+    "tech",
+    "soft",
+    "upbeat",
+    "cinematic"
+  ];
+
   return styles[Math.floor(Math.random() * styles.length)];
 }
